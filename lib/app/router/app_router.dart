@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:organizer/features/home/presentation/screens/home_screen.dart';
 import 'package:organizer/features/inventory/presentation/screens/inventory_screen.dart';
+import 'package:organizer/features/inventory/presentation/screens/add_inventory_item_screen.dart';
 import 'package:organizer/features/settings/presentation/screens/settings_screen.dart';
 
 class AppRouter {
@@ -10,15 +11,12 @@ class AppRouter {
 
   static final GoRouter router = GoRouter(
     initialLocation: '/',
-
     routes: [
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return MainNavigationShell(navigationShell: navigationShell);
         },
-
         branches: [
-          // Home
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -27,8 +25,6 @@ class AppRouter {
               ),
             ],
           ),
-
-          // Inventory
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -37,8 +33,6 @@ class AppRouter {
               ),
             ],
           ),
-
-          // Settings
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -48,6 +42,12 @@ class AppRouter {
             ],
           ),
         ],
+      ),
+
+      // Add item page, displayed outside the bottom navigation shell.
+      GoRoute(
+        path: '/inventory/add',
+        builder: (context, state) => const AddInventoryItemScreen(),
       ),
     ],
   );
@@ -62,30 +62,25 @@ class MainNavigationShell extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: navigationShell,
-
       bottomNavigationBar: NavigationBar(
         selectedIndex: navigationShell.currentIndex,
-
         onDestinationSelected: (index) {
           navigationShell.goBranch(
             index,
             initialLocation: index == navigationShell.currentIndex,
           );
         },
-
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home_rounded),
             label: 'Home',
           ),
-
           NavigationDestination(
             icon: Icon(Icons.inventory_2_outlined),
             selectedIcon: Icon(Icons.inventory_2_rounded),
             label: 'Inventory',
           ),
-
           NavigationDestination(
             icon: Icon(Icons.settings_outlined),
             selectedIcon: Icon(Icons.settings_rounded),
