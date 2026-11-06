@@ -5,6 +5,8 @@ import 'package:organizer/features/home/presentation/screens/home_screen.dart';
 import 'package:organizer/features/inventory/presentation/screens/inventory_screen.dart';
 import 'package:organizer/features/inventory/presentation/screens/add_inventory_item_screen.dart';
 import 'package:organizer/features/settings/presentation/screens/settings_screen.dart';
+import 'package:organizer/features/categories/presentation/screens/category_management_screen.dart';
+import 'package:organizer/features/storage_locations/presentation/screens/storage_location_management_screen.dart';
 
 class AppRouter {
   AppRouter._();
@@ -49,6 +51,15 @@ class AppRouter {
         path: '/inventory/add',
         builder: (context, state) => const AddInventoryItemScreen(),
       ),
+      GoRoute(
+        path: '/settings/categories',
+        builder: (context, state) => const CategoryManagementScreen(),
+      ),
+      GoRoute(
+  path: '/settings/storage-locations',
+  builder: (context, state) =>
+      const StorageLocationManagementScreen(),
+),
     ],
   );
 }

@@ -17,6 +17,7 @@ class StorageLocationRepository {
     String? parentId,
     String? description,
   }) async {
+    await _validateParent(parentId: parentId);
     final id = _uuid.v4();
     final now = DateTime.now().toUtc();
 
@@ -83,6 +84,14 @@ class StorageLocationRepository {
     String? parentId,
     String? description,
   }) async {
+    final existingLocation = await getLocationById(id);
+
+    if (existingLocation == null) {
+      throw StateError('Location does not exist.');
+    }
+
+    await _validateParent(parentId: parentId, locationId: id);
+
     final now = DateTime.now().toUtc();
 
     await _database.transaction(() async {
@@ -108,6 +117,13 @@ class StorageLocationRepository {
 
   // SOFT DELETE
   Future<void> deleteLocation(String id) async {
+    final existingLocation = await getLocationById(id);
+
+    if (existingLocation == null) {
+      throw StateError('Location does not exist.');
+    }
+
+    await _validateDeletion(id);
     final now = DateTime.now().toUtc();
 
     await _database.transaction(() async {
@@ -144,6 +160,65 @@ class StorageLocationRepository {
             operation: Value(operation),
           ),
         );
+  }
+
+  Future<void> _validateParent({
+    required String? parentId,
+    String? locationId,
+  }) async {
+    if (parentId == null) return;
+
+    if (parentId == locationId) {
+      throw StateError('A location cannot be its own parent.');
+    }
+
+    final locations = await getLocations();
+
+    final parentExists = locations.any((location) => location.id == parentId);
+
+    if (!parentExists) {
+      throw StateError('Selected parent location does not exist.');
+    }
+
+    String? currentParentId = parentId;
+
+    while (currentParentId != null) {
+      if (currentParentId == locationId) {
+        throw StateError(
+          'This parent would create a circular location hierarchy.',
+        );
+      }
+
+      final parent = locations.where(
+        (location) => location.id == currentParentId,
+      );
+
+      if (parent.isEmpty) break;
+
+      currentParentId = parent.first.parentId;
+    }
+  }
+
+  Future<void> _validateDeletion(String id) async {
+    final children = await getChildLocations(id);
+
+    if (children.isNotEmpty) {
+      throw StateError(
+        'Move or delete child locations before deleting this location.',
+      );
+    }
+
+    final inventoryItems =
+        await (_database.select(_database.inventoryItems)..where(
+              (item) => item.locationId.equals(id) & item.deletedAt.isNull(),
+            ))
+            .get();
+
+    if (inventoryItems.isNotEmpty) {
+      throw StateError(
+        'Move inventory items to another location before deleting this location.',
+      );
+    }
   }
 }
 
