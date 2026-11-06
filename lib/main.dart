@@ -6,10 +6,5 @@ import 'app/organizer_app.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(
-    const ProviderScope(
-      child: OrganizerApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: OrganizerApp()));
 }
-

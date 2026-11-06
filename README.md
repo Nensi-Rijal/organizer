@@ -101,3 +101,19 @@ to install the dependencies
 Finally 
 `flutter pub get`
 
+## After doing changes run these commands below in order
+
+### First
+`dart format lib test`
+
+### Second
+
+`flutter analyze`
+
+### Third
+
+`flutter test`
+
+### Fourth
+
+`flutter run`
