@@ -117,3 +117,11 @@ Finally
 ### Fourth
 
 `flutter run`
+
+## for the database 
+
+### Generate the Drfit database code
+
+run this command
+`dart run build_runner build --delete-conflicting-outputs`
+
